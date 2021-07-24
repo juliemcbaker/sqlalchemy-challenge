@@ -1,14 +1,37 @@
 # 1. import Flask
-from flask import Flask
+from flask import Flask, jsonify
+
+import numpy as np
+
+import sqlalchemy
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
 
 # 2. create an app, being sure to pass __name__
 app = Flask(__name__)
+
+# =========================
+# @app.route("/api/v1.0/justice-league")
+# def justice_league():
+  #  """Return the justice league data as json"""
+#
+   # return jsonify(justice_league_members)
+# ==============================================
 
 # 3. Define what to do when a user hits the index route
 @app.route("/")
 def home():
     print("Server received request for 'Home' page...")
-    return "Welcome to Climate App Home Page"
+    return (
+        f"Welcome to Climate App Home Page<br/>"
+        f"Available Routes:<br/>"
+        f"/api/v1.0/precipitation<br/>"
+        f"/api/v1.0/stations<br/>"
+        f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/<start><br/>"
+        f"/api/v1.0/<start>/<end><br/>"
+    )
 # list all routes that are available
 
 
@@ -33,15 +56,18 @@ def tobs():
 #   * Query the dates and temperature observations of the most active station for the last year of data.
 # * Return a JSON list of temperature observations (TOBS) for the previous year.
 
-@app.route("/api/v1.0/<start>" and "/api/v1.0/<start>/<end>")
-def temp_search():
+@app.route("/api/v1.0/<start>")
+def temp_search1(start):
     print("Server received request for 'temperature search' page...")
-    return "Welcome to the Temperature Search page!"
+    return "Type in a start date for your temperature search"
 
 #  * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
 #  * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
 #  * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-
+@app.route("/api/v1.0/<start>/<end>")
+def temp_search2(start, end):
+    print("Server received request for 'temperature search' page...")
+    return "Type in start and end dates for your temperature search"
 
 if __name__ == "__main__":
     app.run(debug=True)
