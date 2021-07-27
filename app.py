@@ -65,8 +65,6 @@ def precip():
           
     session.close()
 
-    #precip_info = list(np.ravel(precip_output))
-
     precip_dict = {}
 
     for row in precip_output:
@@ -84,6 +82,7 @@ def stations():
     session = Session(engine)
 
     station_output = session.query(Stations.station, Stations.name).all()
+    session.close()
 
     station_dict = {}
     for row in station_output:
@@ -105,8 +104,9 @@ def tobs():
     active_station = session.query(Measurement.date, Measurement.tobs).\
         filter(Measurement.date >= dt.date(2016, 8, 23), Measurement.station == "USC00519281").\
         order_by(Measurement.tobs).all()
+    session.close()
 
-    active_dict ={}
+    active_dict = {}
     for row in active_station:
         active_dict[row[0]]=row[1]
     
@@ -119,7 +119,23 @@ def tobs():
 @app.route("/api/v1.0/<start>")
 def temp_search1(start):
     print("Server received request for 'temperature search' page...")
-    return "Type in a start date for your temperature search"
+
+# * need to set up way to standardize the date that was given so it can fetch the data correctly
+    session = Session(engine)
+
+    date_fixed = start.replace()
+
+    start_here = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= dt.date(start)).all()
+    
+    start_dict = {
+        "Observed values after:" : start,
+        "Minimum Obs Temp": start_here[1],
+        "Average Obs Temp": start_here[2],
+        "Maximum Obs Temp": start_here[3]
+    }
+    return jsonify(start_dict)
+    # return "Type in a start date for your temperature search"
 
 # 3.5
 #  * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
