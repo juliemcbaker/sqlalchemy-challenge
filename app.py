@@ -123,16 +123,16 @@ def temp_search1(start):
 # * need to set up way to standardize the date that was given so it can fetch the data correctly
     session = Session(engine)
 
-    date_fixed = start.replace()
+    #date_fixed = start.replace()
 
-    start_here = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    start_here = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= dt.date(start)).all()
     
     start_dict = {
         "Observed values after:" : start,
-        "Minimum Obs Temp": start_here[1],
-        "Average Obs Temp": start_here[2],
-        "Maximum Obs Temp": start_here[3]
+        "Minimum Obs Temp": start_here[0],
+        "Average Obs Temp": start_here[1],
+        "Maximum Obs Temp": start_here[2]
     }
     return jsonify(start_dict)
     # return "Type in a start date for your temperature search"
@@ -142,6 +142,25 @@ def temp_search1(start):
 @app.route("/api/v1.0/<start>/<end>")
 def temp_search2(start, end):
     print("Server received request for 'temperature search' page...")
+    
+    # * need to set up way to standardize the date that was given so it can fetch the data correctly
+    session = Session(engine)
+
+    #date_fixed = start.replace()
+
+    btwn_here = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= dt.date(start), Measurement.date <= dt.date(end)).all()
+    
+    btwn_dict = {
+        "Observed values after:" : start,
+        "Observed values before:" : end,
+        "Minimum Obs Temp": btwn_here[0],
+        "Average Obs Temp": btwn_here[1],
+        "Maximum Obs Temp": btwn_here[2]
+    }
+    return jsonify(start_dict)
+    
+    
     return "Type in start and end dates for your temperature search"
 
 if __name__ == "__main__":
