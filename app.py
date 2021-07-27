@@ -1,5 +1,5 @@
 # 1. import dependencies
-from flask import Flask, jsonify
+from flask import Flask, json, jsonify
 
 import numpy as np
 import datetime as dt
@@ -99,7 +99,19 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     print("Server received request for 'temperature' page...")
-    return "Welcome to the Observed Temperature page!"
+    
+    session = Session(engine)
+
+    active_station = session.query(Measurement.date, Measurement.tobs).\
+        filter(Measurement.date >= dt.date(2016, 8, 23), Measurement.station == "USC00519281").\
+        order_by(Measurement.tobs).all()
+
+    active_dict ={}
+    for row in active_station:
+        active_dict[row[0]]=row[1]
+    
+    return jsonify(active_dict)
+    # return "Welcome to the Observed Temperature page!"
 
 # 3.4
 #  * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
