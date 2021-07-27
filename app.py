@@ -71,15 +71,8 @@ def precip():
 
     for row in precip_output:
         precip_dict[row[0]]=row[1]
-        
 
-
-#    for each_pair in precip_output:
- #       print(each_pair._asdict())
- #       precip_dict.append()
-    
-
-    # return "Welcome to the Preicipation page! Here are the precipitation data for 24 August 2016 to 24 August 2017"
+    #return "Welcome to the Preicipation page! Here are the precipitation data for 24 August 2016 to 24 August 2017"
     return jsonify(precip_dict)
 
 # 3.2
@@ -87,7 +80,18 @@ def precip():
 @app.route("/api/v1.0/stations")
 def stations():
     print("Server received request for 'stations' page...")
-    return "Welcome to the Stations page!"
+    
+    session = Session(engine)
+
+    station_output = session.query(Stations.station, Stations.name).all()
+
+    station_dict = {}
+    for row in station_output:
+        station_dict[row[0]]=row[1]
+
+    return jsonify(station_dict)
+    
+    # return "Welcome to the Stations page!"
 
 # 3.3
 #   * Query the dates and temperature observations of the most active station for the last year of data.
